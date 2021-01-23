@@ -1,3 +1,4 @@
+import 'package:brand_names/src/pages/home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:brand_names/src/pages/status_page.dart';
@@ -13,9 +14,10 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'Band Names',
-        initialRoute: 'home',
+        initialRoute: 'status',
         routes: {
-          'home': (_) => StatusPage(),
+          'home': (_) => HomePage(),
+          'status': (_) => StatusPage(),
         },
       ),
     );

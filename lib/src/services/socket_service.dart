@@ -7,18 +7,25 @@ enum ServerStatus { Online, Offline, Connecting }
 class SocketService with ChangeNotifier {
   ServerStatus _serverStatus = ServerStatus.Connecting;
 
+  get serverStatus => this._serverStatus;
+
   SocketService() {
     this._initConfig();
   }
 
   void _initConfig() {
-    IO.Socket socket = IO.io('http://localhost:3000', {
+    IO.Socket socket =
+        IO.io('https://flutter-socket-server.herokuapp.com/', <String, dynamic>{
       'transports': ['websocket'],
       'autoConnect': true,
     });
     socket.onConnect((_) {
-      print('connect');
+      this._serverStatus = ServerStatus.Online;
+      notifyListeners();
     });
-    socket.onDisconnect((_) => print('disconnect'));
+    socket.onDisconnect((_) {
+      this._serverStatus = ServerStatus.Offline;
+      notifyListeners();
+    });
   }
 }
