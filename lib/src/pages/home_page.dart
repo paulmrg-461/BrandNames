@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:provider/provider.dart';
+import 'package:pie_chart/pie_chart.dart';
 import 'package:brand_names/src/models/band.dart';
 import 'package:brand_names/src/services/socket_service.dart';
 
@@ -63,9 +64,17 @@ class _HomePageState extends State<HomePage> {
         ],
         backgroundColor: Colors.white,
       ),
-      body: ListView.builder(
-        itemCount: bands.length,
-        itemBuilder: (context, i) => _bandTile(bands[i]),
+      body: Column(
+        children: [
+          _showGraph(),
+          Expanded(
+            child: ListView.builder(
+              physics: BouncingScrollPhysics(),
+              itemCount: bands.length,
+              itemBuilder: (context, i) => _bandTile(bands[i]),
+            ),
+          ),
+        ],
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: addNewBand,
@@ -165,5 +174,13 @@ class _HomePageState extends State<HomePage> {
                     onPressed: () => addBandToList(textController.text)),
               ],
             ));
+  }
+
+  Widget _showGraph() {
+    Map<String, double> dataMap = new Map();
+    bands.forEach((band) {
+      dataMap.putIfAbsent(band.name, () => band.votes.toDouble());
+    });
+    return PieChart(dataMap: dataMap);
   }
 }
