@@ -12,13 +12,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  List<Band> bands = [
-    /* 
-    Band(id: '1', name: 'Metallica', votes: 5),
-    Band(id: '2', name: 'Guns and Roses', votes: 7),
-    Band(id: '3', name: 'Aerosmith', votes: 6),
-    Band(id: '4', name: 'Queen', votes: 4), */
-  ];
+  List<Band> bands = [];
 
   @override
   void initState() {
@@ -84,10 +78,8 @@ class _HomePageState extends State<HomePage> {
     return Dismissible(
       key: Key(band.id),
       direction: DismissDirection.startToEnd,
-      onDismissed: (direction) {
-        print('Direction: $direction ID: ${band.id}');
-        //TODO: get delete in server
-      },
+      onDismissed: (direction) =>
+          socketService.socket.emit('delete-band', {'id': band.id}),
       background: Container(
         padding: EdgeInsets.only(left: 12.0),
         color: Colors.red.shade300,
@@ -111,7 +103,7 @@ class _HomePageState extends State<HomePage> {
           '${band.votes}',
           style: TextStyle(fontSize: 18),
         ),
-        onTap: () => socketService.socket.emit('vote-band', {'id': band.id}),
+        onTap: () => socketService.emit('vote-band', {'id': band.id}),
       ),
     );
   }
@@ -125,11 +117,10 @@ class _HomePageState extends State<HomePage> {
   }
 
   void addBandToList(String name) {
+    final socketService = Provider.of<SocketService>(context, listen: false);
     if (name.length > 1) {
-      this
-          .bands
-          .add(new Band(id: DateTime.now().toString(), name: name, votes: 0));
-      setState(() {});
+      //this.bands.add(new Band(id: DateTime.now().toString(), name: name, votes: 0));
+      socketService.emit('add-band', {'name': name});
     }
     Navigator.pop(context);
   }
